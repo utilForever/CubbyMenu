@@ -13,12 +13,12 @@ namespace CubbyMenu
 class MenuItem
 {
  public:
-    MenuItem(std::string_view title) : m_title{ title }
+    explicit MenuItem(std::string_view title) : m_title{ title }
     {
         // Do nothing
     }
 
-    MenuItem(std::string_view title, std::function<void()>&& callback)
+    explicit MenuItem(std::string_view title, std::function<void()>&& callback)
         : m_title{ title }, m_callback{ std::move(callback) }
     {
         // Do nothing
