@@ -1,0 +1,5 @@
+exclude_paths:
+  - README.md
+  - .github/**
+  - Libraries/**
+  - Medias/**
