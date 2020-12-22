@@ -2,7 +2,7 @@
 
 int main()
 {
-	CubbyMenu::Menu menu;
+    CubbyMenu::Menu menu;
 
     menu.add_item("Option 0");
     menu.add_item("Option 1");

@@ -19,7 +19,7 @@ void option2()
 
 int main()
 {
-	CubbyMenu::Menu menu;
+    CubbyMenu::Menu menu;
 
     menu.add_item("Option 0", &option0);
     menu.add_item("Option 1", &option1);
