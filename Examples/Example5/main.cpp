@@ -5,7 +5,7 @@
 int main()
 {
     auto f{ [](auto const& e) {
-        return [e]() { std::cout << e << std::endl; };
+        return [e](std::vector<std::string> const&) { std::cout << e << std::endl; };
     } };
 
     CubbyMenu::Menu{ "MyMenu" }

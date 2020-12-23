@@ -4,17 +4,17 @@
 
 #include <sstream>
 
-void option0()
+void option0(std::vector<std::string> const&)
 {
     std::cout << "Option 0 is called!\n";
 }
 
-void option1()
+void option1(std::vector<std::string> const&)
 {
     std::cout << "Option 1 is called!\n";
 }
 
-void option2()
+void option2(std::vector<std::string> const&)
 {
     std::cout << "Option 2 is called!\n";
 }
@@ -55,11 +55,11 @@ TEST_CASE("CubbyMenu - basic tests")
         CubbyMenu::Menu menu;
 
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 0", []() { std::cout << "Option 0 is called!\n"; }));
+            "Option 0", [](std::vector<std::string> const&) { std::cout << "Option 0 is called!\n"; }));
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 1", []() { std::cout << "Option 1 is called!\n"; }));
+            "Option 1", [](std::vector<std::string> const&) { std::cout << "Option 1 is called!\n"; }));
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 2", []() { std::cout << "Option 2 is called!\n"; }));
+            "Option 2", [](std::vector<std::string> const&) { std::cout << "Option 2 is called!\n"; }));
     }
 
     SUBCASE("Input option")
@@ -67,11 +67,11 @@ TEST_CASE("CubbyMenu - basic tests")
         CubbyMenu::Menu menu;
 
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 0", []() { std::cout << "Option 0 is called!\n"; }));
+            "Option 0", [](std::vector<std::string> const&) { std::cout << "Option 0 is called!\n"; }));
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 1", []() { std::cout << "Option 1 is called!\n"; }));
+            "Option 1", [](std::vector<std::string> const&) { std::cout << "Option 1 is called!\n"; }));
         REQUIRE_NOTHROW(menu.add_item(
-            "Option 2", []() { std::cout << "Option 2 is called!\n"; }));
+            "Option 2", [](std::vector<std::string> const&) { std::cout << "Option 2 is called!\n"; }));
 
         std::stringbuf test_input("1", std::ios_base::in);
         std::stringbuf test_output(std::ios_base::out);

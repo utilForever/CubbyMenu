@@ -156,7 +156,14 @@ class Menu
                         std::visit(
                             overloaded{ [](Menu const& menu) { menu.print(); },
                                         [&args](MenuItem const& menu_item) {
-                                            std::invoke(menu_item, args);
+                                            try
+                                            {
+                                                std::invoke(menu_item, args);
+                                            }
+                                            catch (...)
+                                            {
+                                                std::cout << "The callback is not registered.\n";
+                                            }
                                         } },
                             m_items[converted_option]);
 
