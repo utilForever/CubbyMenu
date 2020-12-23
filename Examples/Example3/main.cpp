@@ -2,17 +2,17 @@
 
 #include <iostream>
 
-void option0()
+void option0(std::vector<std::string> const&)
 {
     std::cout << "Option 0 is called!\n";
 }
 
-void option1()
+void option1(std::vector<std::string> const&)
 {
     std::cout << "Option 1 is called!\n";
 }
 
-void option2()
+void option2(std::vector<std::string> const&)
 {
     std::cout << "Option 2 is called!\n";
 }
