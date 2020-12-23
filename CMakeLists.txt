@@ -41,6 +41,7 @@ add_subdirectory(Examples/Example1)
 add_subdirectory(Examples/Example2)
 add_subdirectory(Examples/Example3)
 add_subdirectory(Examples/Example4)
+add_subdirectory(Examples/Example5)
 add_subdirectory(Tests/UnitTests)
 
 # Code coverage - Debug only
