@@ -28,6 +28,18 @@ TEST_CASE("CubbyMenu - basic tests")
         REQUIRE_NOTHROW(menu.add_item("Option 0"));
         REQUIRE_NOTHROW(menu.add_item("Option 1"));
         REQUIRE_NOTHROW(menu.add_item("Option 2"));
+
+        std::stringbuf test_input("1", std::ios_base::in);
+        std::stringbuf test_output(std::ios_base::out);
+        std::streambuf* const cin_buf = std::cin.rdbuf(&test_input);
+        std::streambuf* const cout_buf = std::cout.rdbuf(&test_output);
+
+        menu.print();
+
+        std::cout.rdbuf(cout_buf);
+        std::cin.rdbuf(cin_buf);
+
+        REQUIRE(test_output.str() == "0. Option 0\n1. Option 1\n2. Option 2\n>> The callback is not registered.\n");
     }
 
     SUBCASE("Simple menu with header")
@@ -84,6 +96,30 @@ TEST_CASE("CubbyMenu - basic tests")
         std::cin.rdbuf(cin_buf);
 
         REQUIRE(test_output.str() == "0. Option 0\n1. Option 1\n2. Option 2\n>> Option 1 is called!\n");
+    }
+
+    SUBCASE("Invalid input option")
+    {
+        CubbyMenu::Menu menu;
+
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 0", [](std::vector<std::string> const&) { std::cout << "Option 0 is called!\n"; }));
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 1", [](std::vector<std::string> const&) { std::cout << "Option 1 is called!\n"; }));
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 2", [](std::vector<std::string> const&) { std::cout << "Option 2 is called!\n"; }));
+
+        std::stringbuf test_input("e\n1", std::ios_base::in);
+        std::stringbuf test_output(std::ios_base::out);
+        std::streambuf* const cin_buf = std::cin.rdbuf(&test_input);
+        std::streambuf* const cout_buf = std::cout.rdbuf(&test_output);
+
+        menu.print();
+
+        std::cout.rdbuf(cout_buf);
+        std::cin.rdbuf(cin_buf);
+
+        REQUIRE(test_output.str() == "0. Option 0\n1. Option 1\n2. Option 2\n>> Invalid option! Try again.\n>> Option 1 is called!\n");
     }
 
     SUBCASE("Sub Menu")
@@ -283,5 +319,29 @@ arg 4: C++Korea
 4. Div(int / int)
 >> 18 + 10 = 28
 )~");
+    }
+
+    SUBCASE("Empty Input")
+    {
+        CubbyMenu::Menu menu;
+
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 0", [](std::vector<std::string> const&) { std::cout << "Option 0 is called!\n"; }));
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 1", [](std::vector<std::string> const&) { std::cout << "Option 1 is called!\n"; }));
+        REQUIRE_NOTHROW(menu.add_item(
+            "Option 2", [](std::vector<std::string> const&) { std::cout << "Option 2 is called!\n"; }));
+
+        std::stringbuf test_input("\n-1\n1", std::ios_base::in);
+        std::stringbuf test_output(std::ios_base::out);
+        std::streambuf* const cin_buf = std::cin.rdbuf(&test_input);
+        std::streambuf* const cout_buf = std::cout.rdbuf(&test_output);
+
+        menu.print();
+
+        std::cout.rdbuf(cout_buf);
+        std::cin.rdbuf(cin_buf);
+
+        REQUIRE(test_output.str() == "0. Option 0\n1. Option 1\n2. Option 2\n>> Invalid option! Try again.\n>> Invalid option! Try again.\n>> Option 1 is called!\n");
     }
 }
