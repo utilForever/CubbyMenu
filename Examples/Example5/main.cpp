@@ -28,7 +28,7 @@ int main()
                 .add_item_ex("Option 2.2", f("Option 2.2 is called."))
                 .add_item_ex("Option 2.3", f("Option 2.3 is called."))
         )
-        .add_item_ex("Option 3")
+        .add_item_ex("Option 3", f("Option 3 is called."))
         .print()
         ;
 }

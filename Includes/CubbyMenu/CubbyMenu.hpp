@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 #include <variant>
+#include <any>
+#include <sstream>
 
 template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
@@ -22,7 +24,7 @@ class MenuItem
         // Do nothing
     }
 
-    explicit MenuItem(std::string_view title, std::function<void()>&& callback)
+    explicit MenuItem(std::string_view title, std::function<void(std::vector<std::string> const&)>&& callback)
         : m_title{ title }, m_callback{ std::move(callback) }
     {
         // Do nothing
@@ -33,19 +35,14 @@ class MenuItem
         return m_title;
     }
 
-    [[nodiscard]] std::function<void()> get_callback() const
+    void operator()(std::vector<std::string> const& args) const
     {
-        return m_callback;
-    }
-
-    void operator()() const
-    {
-        std::invoke(m_callback);
+        std::invoke(m_callback, args); 
     }
 
  private:
     std::string_view m_title;
-    std::function<void()> m_callback;
+    std::function<void(std::vector<std::string> const&)> m_callback;
 };
 
 class Menu
@@ -94,12 +91,12 @@ class Menu
         return std::move(*this);
     }
 
-    void add_item(std::string_view title, std::function<void()> callback)
+    void add_item(std::string_view title, std::function<void(std::vector<std::string> const&)> callback)
     {
         m_items.emplace_back(MenuItem{ title, std::move(callback) });
     }
 
-    Menu add_item_ex(std::string_view title, std::function<void()> callback) &&
+    Menu add_item_ex(std::string_view title, std::function<void(std::vector<std::string> const&)> callback) &&
     {
         m_items.emplace_back(MenuItem{ title, std::move(callback) });
 
@@ -125,46 +122,52 @@ class Menu
             }, m_items[i]);
         }
 
-        auto converted_option{ 0 };
         auto end_flag{ false };
 
         while (!end_flag)
         {
+            std::vector<std::string> args;
+
             std::cout << ">> ";
 
-            if (std::string option; std::getline(std::cin, option))
+            if (std::string line; std::getline(std::cin, line))
             {
+                std::istringstream is(line);
+
+                for (std::string arg; std::getline(is, arg, ' '); )
+                    args.push_back(std::move(arg));
+
+                if (std::empty(args))
+                {
+                    std::cout << "Invalid option! Try again.\n";
+                    continue;
+                }
+
                 try
                 {
-                    converted_option = std::stoi(option);
+                    if (auto converted_option{ std::stoi(args[0]) };
+                        converted_option < 0 ||
+                        converted_option >= static_cast<int>(m_items.size()))
+                    {
+                        std::cout << "Invalid option! Try again.\n";
+                    }
+                    else
+                    {
+                        std::visit(
+                            overloaded{ [](Menu const& menu) { menu.print(); },
+                                        [&args](MenuItem const& menu_item) {
+                                            std::invoke(menu_item, args);
+                                        } },
+                            m_items[converted_option]);
+
+                        end_flag = true;
+                    }
                 }
                 catch (...)
                 {
                     std::cout << "Invalid option! Try again.\n";
+                    continue;
                 }
-            }
-
-            if (converted_option < 0 ||
-                converted_option >= static_cast<int>(m_items.size()))
-            {
-                std::cout << "Invalid option! Try again.\n";
-            }
-            else
-            {
-                std::visit(overloaded{
-                    [](Menu const& menu) {
-                        menu.print();
-                    },
-                    [](MenuItem const& menu_item) {
-                        if (auto func{ menu_item.get_callback() };
-                            func != nullptr)
-                            std::invoke(func);
-                        else
-                            std::cout << "The callback is not registered.\n";
-                    }
-                }, m_items[converted_option]);
-
-                end_flag = true;
             }
         }
     }
